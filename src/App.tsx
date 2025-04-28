@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
 import Home from "./pages/Home";
+import NoMatch from "./pages/NoMatch";
 import Report from "./pages/Report";
 
 const router = createBrowserRouter([
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
   {
     path: "/report",
     element: <Report />,
+  },
+  {
+    path: "*",
+    element: <NoMatch />,
   },
 ]);
 function App() {
