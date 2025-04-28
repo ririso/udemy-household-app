@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./App.css";
+import AppLayout from "./components/layout/AppLayout";
 import Home from "./pages/Home";
 import NoMatch from "./pages/NoMatch";
 import Report from "./pages/Report";
@@ -8,15 +9,21 @@ import Report from "./pages/Report";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/report",
-    element: <Report />,
-  },
-  {
-    path: "*",
-    element: <NoMatch />,
+    element: <AppLayout />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "report",
+        element: <Report />,
+      },
+      {
+        path: "*",
+        element: <NoMatch />,
+      },
+    ],
   },
 ]);
 function App() {
