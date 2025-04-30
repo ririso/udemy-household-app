@@ -11,6 +11,7 @@ import {
   ListItemText,
   Toolbar,
 } from "@mui/material";
+import { CSSProperties } from "react";
 import { NavLink } from "react-router-dom";
 
 interface SidebarProps {
@@ -35,13 +36,33 @@ const SideBar = ({
     { text: "Report", path: "/report", icon: EqualizerIcon },
   ];
 
+  const baseLinkStyle: CSSProperties = {
+    textDecoration: "none",
+    color: "inherit",
+    display: "block",
+  };
+
+  const activeLinkStyle: CSSProperties = {
+    backgroundColor: "rgba(0,0,0,0.08)",
+  };
+
   const drawer = (
     <div>
       <Toolbar />
       <Divider />
       <List>
         {MenuItems.map((item, index) => (
-          <NavLink to={item.path}>
+          <NavLink
+            key={item.text}
+            to={item.path}
+            style={({ isActive }) => {
+              console.log("選択されたメニューは", item.text, +isActive);
+              return {
+                ...baseLinkStyle,
+                ...(isActive ? activeLinkStyle : {}),
+              };
+            }}
+          >
             <ListItem key={item.text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
