@@ -15,25 +15,33 @@ import { Transaction } from "./types";
 function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+  // Firestoreのエラーかどうかを判定する型ガード
+  function isFireStoreError(
+    err: unknown
+  ): err is { code: string; message: string } {
+    return typeof err === "object" && err !== null && "code" in err;
+  }
+
   useEffect(() => {
     const fecheTransactions = async () => {
       try {
         const querySnapShot = await getDocs(collection(db, "Transactions"));
-        // querySnapShot.docs.map((doc) => {
-        //   console.log(doc.id, " => ", doc.data());
-        // });
-
         const transactionsData = querySnapShot.docs.map((doc) => {
           return {
             ...doc.data(),
             id: doc.id,
           } as Transaction;
         });
-
-        console.log(transactionsData);
         setTransactions(transactionsData);
       } catch (err) {
-        // error
+        if (isFireStoreError(err)) {
+          console.error(err);
+          console.error(err.message);
+          console.error(err.code);
+        } else {
+          // その他のエラー
+          console.log(err);
+        }
       }
     };
     fecheTransactions();
