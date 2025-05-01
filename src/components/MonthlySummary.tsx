@@ -2,12 +2,16 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
+import { Transaction } from "../types";
 
-const MonthlySummary = () => {
+interface MonthlySummaryProps {
+  monthlyTransactions: Transaction[];
+}
+const MonthlySummary = ({ monthlyTransactions }: MonthlySummaryProps) => {
   return (
     <Grid container spacing={{ xs: 1, sm: 2 }} mb={2}>
       {/* 収入 */}
-      <Grid size={{ xs: 4 }} display={"flex"} flexDirection={"column"}>
+      <Grid item xs={4} display={"flex"} flexDirection={"column"}>
         <Card
           sx={{
             bgcolor: (theme) => theme.palette.incomeColor.main,
@@ -36,7 +40,7 @@ const MonthlySummary = () => {
         </Card>
       </Grid>
       {/* 支出 */}
-      <Grid size={{ xs: 4 }} display={"flex"} flexDirection={"column"}>
+      <Grid item xs={4} display={"flex"} flexDirection={"column"}>
         <Card
           sx={{
             bgcolor: (theme) => theme.palette.expenseColor.main,
@@ -65,7 +69,7 @@ const MonthlySummary = () => {
         </Card>
       </Grid>
       {/* 残高 */}
-      <Grid size={{ xs: 4 }} display={"flex"} flexDirection={"column"}>
+      <Grid item xs={4} display={"flex"} flexDirection={"column"}>
         <Card
           sx={{
             bgcolor: (theme) => theme.palette.balanceColor.main,

@@ -11,9 +11,11 @@ import NoMatch from "./pages/NoMatch";
 import Report from "./pages/Report";
 import { theme } from "./theme/theme";
 import { Transaction } from "./types";
+import { formatMonth } from "./utils/formatting";
 
 function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Firestoreのエラーかどうかを判定する型ガード
   function isFireStoreError(
@@ -47,13 +49,22 @@ function App() {
     fecheTransactions();
   }, []);
 
+  const monthlyTransactions = transactions.filter((transaction) => {
+    return transaction.date.startsWith(formatMonth(currentMonth));
+  });
+
+  console.log(monthlyTransactions);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home />} />
+            <Route
+              index
+              element={<Home monthlyTransactions={monthlyTransactions} />}
+            />
             <Route path="/report" element={<Report />} />
             <Route path="*" element={<NoMatch />} />
           </Route>
