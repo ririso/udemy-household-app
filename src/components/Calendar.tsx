@@ -3,8 +3,9 @@ import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import FullCalendar from "@fullcalendar/react";
 import "../calendar.css";
-import { Transaction } from "../types";
+import { Balance, CalendarContent, Transaction } from "../types";
 import { calculateDailyBalances } from "../utils/financeCalculations";
+import { formatCurrency } from "../utils/formatting";
 
 interface CalendarProps {
   monthlyTransactions: Transaction[];
@@ -21,8 +22,23 @@ const Calendar = ({ monthlyTransactions }: CalendarProps) => {
     },
   ];
 
+  const createCalendarEvents = (
+    dailyBalances: Record<string, Balance>
+  ): CalendarContent[] => {
+    return Object.keys(dailyBalances).map((date) => {
+      const { income, expense, balance } = dailyBalances[date];
+      return {
+        start: date,
+        income: formatCurrency(income),
+        expense: formatCurrency(expense),
+        balance: formatCurrency(balance),
+      };
+    });
+  };
+
   const dailyBalances = calculateDailyBalances(monthlyTransactions);
-  console.log(dailyBalances);
+  const calendarEvents = createCalendarEvents(dailyBalances);
+  console.log(calendarEvents);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     return (
@@ -52,7 +68,7 @@ const Calendar = ({ monthlyTransactions }: CalendarProps) => {
     <FullCalendar
       locale={jaLocale}
       plugins={[dayGridPlugin]}
-      events={events}
+      events={calendarEvents}
       eventContent={renderEventContent}
       initialView="dayGridMonth"
     />
