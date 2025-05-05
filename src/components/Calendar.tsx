@@ -1,8 +1,10 @@
-import { DatesSetArg, EventContentArg } from "@fullcalendar/core";
+import { EventContentArg } from "@fullcalendar/core";
 import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { DateClickArg } from "@fullcalendar/interaction";
+import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
+import { useTheme } from "@mui/material";
+import React from "react";
 import "../calendar.css";
 import { Balance, CalendarContent, Transaction } from "../types";
 import { calculateDailyBalances } from "../utils/financeCalculations";
@@ -10,25 +12,16 @@ import { formatCurrency } from "../utils/formatting";
 
 interface CalendarProps {
   monthlyTransactions: Transaction[];
-  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   setCurrentDay: React.Dispatch<React.SetStateAction<string>>;
+  currentDay: string;
+  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
 }
-const Calendar = ({
-  monthlyTransactions,
-  setCurrentMonth,
-  setCurrentDay,
-}: CalendarProps) => {
-  const events = [
-    { title: "Meeting", start: new Date() },
-    {
-      title: "Meeting",
-      start: new Date(),
-      income: 300,
-      expense: 200,
-      balance: 100,
-    },
-  ];
+const Calendar = ({ monthlyTransactions, currentDay }: CalendarProps) => {
+  const theme = useTheme();
+  // 1.各日付の収支を計算する関数（呼び出し）🎃
+  const dailyBalances = calculateDailyBalances(monthlyTransactions);
 
+  // ***2.FullCalendar用のイベントを生成する関数📅
   const createCalendarEvents = (
     dailyBalances: Record<string, Balance>
   ): CalendarContent[] => {
@@ -42,53 +35,53 @@ const Calendar = ({
       };
     });
   };
+  // ******FullCalendar用のイベントを生成する関数ここまで**********
 
-  const dailyBalances = calculateDailyBalances(monthlyTransactions);
   const calendarEvents = createCalendarEvents(dailyBalances);
-  console.log(calendarEvents);
 
+  const backgroundEvent = {
+    start: currentDay,
+    display: "background",
+    backgroundColor: theme.palette.incomeColor.light,
+  };
+
+  //カレンダーイベントの見た目を作る関数
   const renderEventContent = (eventInfo: EventContentArg) => {
     return (
       <div>
         <div className="money" id="event-income">
-          <div>{eventInfo.event.extendedProps.income}</div>
+          {eventInfo.event.extendedProps.income}
         </div>
 
         <div className="money" id="event-expense">
-          <div>{eventInfo.event.extendedProps.expense}</div>
+          {eventInfo.event.extendedProps.expense}
         </div>
 
         <div className="money" id="event-balance">
-          <div>{eventInfo.event.extendedProps.balance}</div>
+          {eventInfo.event.extendedProps.balance}
         </div>
       </div>
     );
   };
 
-  const handlDateSet = (datesetInfo: DatesSetArg) => {
-    console.log(datesetInfo);
-    setCurrentMonth(datesetInfo.view.currentStart);
-  };
-
-  const handleDateClick = (dateInfo: DateClickArg) => {
-    setCurrentDay(dateInfo.dateStr);
-  };
-
-  // const dailyBalances = {
-  //   "2025-05-03": { income: 700, expense: 200, balance: 500 },
-  //   "2025-05-04": { income: 0, expense: 500, balance: -500 },
+  //月の日付取得
+  // const handleDateSet = (datesetInfo: DatesSetArg) => {
+  //   const currentMonth = datesetInfo.view.currentStart;
+  //   setCurrentMonth(currentMonth);
+  //   const todayDate = new Date();
+  //   if (isSameMonth(todayDate, currentMonth)) {
+  //     setCurrentDay(today);
+  //   }
   // };
-  // const dailyBalances = calculateDailyBalances();
 
   return (
     <FullCalendar
       locale={jaLocale}
-      plugins={[dayGridPlugin]}
-      events={calendarEvents}
-      eventContent={renderEventContent}
+      plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
-      datesSet={handlDateSet}
-      dateClick={handleDateClick}
+      events={[...calendarEvents, backgroundEvent]}
+      eventContent={renderEventContent}
+      // datesSet={handleDateSet}
     />
   );
 };
