@@ -3,8 +3,13 @@ import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import FullCalendar from "@fullcalendar/react";
 import "../calendar.css";
+import { Transaction } from "../types";
+import { calculateDailyBalances } from "../utils/financeCalculations";
 
-const Calendar = () => {
+interface CalendarProps {
+  monthlyTransactions: Transaction[];
+}
+const Calendar = ({ monthlyTransactions }: CalendarProps) => {
   const events = [
     { title: "Meeting", start: new Date() },
     {
@@ -15,6 +20,9 @@ const Calendar = () => {
       balance: 100,
     },
   ];
+
+  const dailyBalances = calculateDailyBalances(monthlyTransactions);
+  console.log(dailyBalances);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     return (
@@ -33,6 +41,12 @@ const Calendar = () => {
       </div>
     );
   };
+
+  // const dailyBalances = {
+  //   "2025-05-03": { income: 700, expense: 200, balance: 500 },
+  //   "2025-05-04": { income: 0, expense: 500, balance: -500 },
+  // };
+  // const dailyBalances = calculateDailyBalances();
 
   return (
     <FullCalendar
