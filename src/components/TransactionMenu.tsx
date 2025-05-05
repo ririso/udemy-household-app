@@ -4,10 +4,12 @@ import { Transaction } from "../types";
 interface TransactionMenuProps {
   dailyTransactions: Transaction[];
   currentDay: string;
+  onAddTransactionForm: () => void;
 }
 const TransactionMenu = ({
   dailyTransactions,
   currentDay,
+  onAddTransactionForm,
 }: TransactionMenuProps) => {
   const menuDrawerWidth = 320;
   return (

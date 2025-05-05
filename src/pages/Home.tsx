@@ -3,8 +3,9 @@ import { format } from "date-fns";
 import { useState } from "react";
 import Calendar from "../components/Calendar";
 import MonthlySummary from "../components/MonthlySummary";
-import TransactionMenForm from "../components/TransactionMenForm";
+import TransactionForm from "../components/TransactionForm";
 import TransactionMenu from "../components/TransactionMenu";
+
 import { Transaction } from "../types";
 
 interface HomeProps {
@@ -15,11 +16,21 @@ interface HomeProps {
 const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
   const today = format(new Date(), "yyyy-mm-dd");
   const [currentDay, setCurrentDay] = useState("");
+  const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false);
 
   // 1日分のデータを表示
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
     return transaction.date === currentDay;
   });
+
+  const closeForm = () => {
+    setIsEntryDrawerOpen(!isEntryDrawerOpen);
+  };
+
+  //フォームの開閉処理
+  const handleAddTransactionForm = () => {
+    setIsEntryDrawerOpen(!isEntryDrawerOpen);
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -39,8 +50,12 @@ const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
         <TransactionMenu
           dailyTransactions={dailyTransactions}
           currentDay={currentDay}
+          onAddTransactionForm={handleAddTransactionForm}
         />
-        <TransactionMenForm />
+        <TransactionForm
+          onCloseForm={closeForm}
+          isEntryDrawerOpen={isEntryDrawerOpen}
+        />
       </Box>
     </Box>
   );
