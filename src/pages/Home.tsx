@@ -1,4 +1,6 @@
 import { Box } from "@mui/material";
+import { format } from "date-fns";
+import { useState } from "react";
 import Calendar from "../components/Calendar";
 import MonthlySummary from "../components/MonthlySummary";
 import TransactionMenForm from "../components/TransactionMenForm";
@@ -11,6 +13,14 @@ interface HomeProps {
 }
 
 const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
+  const today = format(new Date(), "yyyy-mm-dd");
+  const [currentDay, setCurrentDay] = useState("");
+
+  // 1日分のデータを表示
+  const dailyTransactions = monthlyTransactions.filter((transaction) => {
+    return transaction.date === currentDay;
+  });
+
   return (
     <Box sx={{ display: "flex" }}>
       // 左側コンテンツ
@@ -19,11 +29,15 @@ const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
         <Calendar
           monthlyTransactions={monthlyTransactions}
           setCurrentMonth={setCurrentMonth}
+          setCurrentDay={setCurrentDay}
         />
       </Box>
       // 右側コンテンツ
       <Box>
-        <TransactionMenu />
+        <TransactionMenu
+          dailyTransactions={dailyTransactions}
+          currentDay={currentDay}
+        />
         <TransactionMenForm />
       </Box>
     </Box>
