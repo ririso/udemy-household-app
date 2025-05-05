@@ -1,9 +1,10 @@
-import { EventContentArg } from "@fullcalendar/core";
+import { DatesSetArg, EventContentArg } from "@fullcalendar/core";
 import jaLocale from "@fullcalendar/core/locales/ja";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import { useTheme } from "@mui/material";
+import { isSameMonth } from "date-fns/isSameMonth";
 import React from "react";
 import "../calendar.css";
 import { Balance, CalendarContent, Transaction } from "../types";
@@ -15,8 +16,15 @@ interface CalendarProps {
   setCurrentDay: React.Dispatch<React.SetStateAction<string>>;
   currentDay: string;
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
+  today: string;
 }
-const Calendar = ({ monthlyTransactions, currentDay }: CalendarProps) => {
+const Calendar = ({
+  monthlyTransactions,
+  currentDay,
+  setCurrentMonth,
+  setCurrentDay,
+  today,
+}: CalendarProps) => {
   const theme = useTheme();
   // 1.各日付の収支を計算する関数（呼び出し）🎃
   const dailyBalances = calculateDailyBalances(monthlyTransactions);
@@ -64,15 +72,15 @@ const Calendar = ({ monthlyTransactions, currentDay }: CalendarProps) => {
     );
   };
 
-  //月の日付取得
-  // const handleDateSet = (datesetInfo: DatesSetArg) => {
-  //   const currentMonth = datesetInfo.view.currentStart;
-  //   setCurrentMonth(currentMonth);
-  //   const todayDate = new Date();
-  //   if (isSameMonth(todayDate, currentMonth)) {
-  //     setCurrentDay(today);
-  //   }
-  // };
+  // 月の日付取得
+  const handleDateSet = (datesetInfo: DatesSetArg) => {
+    const currentMonth = datesetInfo.view.currentStart;
+    setCurrentMonth(currentMonth);
+    const todayDate = new Date();
+    if (isSameMonth(todayDate, currentMonth)) {
+      setCurrentDay(today);
+    }
+  };
 
   return (
     <FullCalendar
@@ -81,7 +89,7 @@ const Calendar = ({ monthlyTransactions, currentDay }: CalendarProps) => {
       initialView="dayGridMonth"
       events={[...calendarEvents, backgroundEvent]}
       eventContent={renderEventContent}
-      // datesSet={handleDateSet}
+      datesSet={handleDateSet}
     />
   );
 };
