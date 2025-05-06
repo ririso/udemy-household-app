@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 interface TransactionFormProps {
@@ -26,7 +27,7 @@ const TransactionForm = ({
   isEntryDrawerOpen,
   currentDay,
 }: TransactionFormProps) => {
-  const { control, setValue } = useForm({
+  const { control, setValue, watch } = useForm({
     defaultValues: {
       type: "expense",
       date: currentDay,
@@ -40,6 +41,13 @@ const TransactionForm = ({
   const incomeExpenseToggle = (type: IncomeExpense) => {
     setValue("type", type);
   };
+
+  const currentType = watch("type");
+
+  useEffect(() => {
+    setValue("date", currentDay);
+  }, [currentDay]);
+
   return (
     <Box
       sx={{
@@ -152,7 +160,12 @@ const TransactionForm = ({
           {/* 内容 */}
           <TextField label="内容" type="text" />
           {/* 保存ボタン */}
-          <Button type="submit" variant="contained" color={"primary"} fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            color={currentType === "income" ? "primary" : "error"}
+            fullWidth
+          >
             保存
           </Button>
         </Stack>
